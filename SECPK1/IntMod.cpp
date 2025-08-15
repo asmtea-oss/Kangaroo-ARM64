@@ -16,7 +16,9 @@
 */
 
 #include "Int.h"
-#include <emmintrin.h>
+//#include <emmintrin.h>
+#include "portable_simd.h"
+#include <arm_neon.h>
 #include <string.h>
 
 #define MAX(x,y) (((x)>(y))?(x):(y))
@@ -221,9 +223,9 @@ void Int::DivStep62(Int* u,Int* v,int64_t* eta,int* pos,int64_t* uu,int64_t* uv,
 
   bitCount = 62;
 
-  __m128i _u;
-  __m128i _v;
-  __m128i _t;
+  uint64x2_t _u;
+  uint64x2_t _v;
+  uint64x2_t _t;
 
 #ifdef WIN64
   _u.m128i_u64[0] = 1;
@@ -243,7 +245,7 @@ void Int::DivStep62(Int* u,Int* v,int64_t* eta,int* pos,int64_t* uu,int64_t* uv,
     uint64_t zeros = TZC(v0 | 1ULL << bitCount);
     vh >>= zeros;
     v0 >>= zeros;
-    _u = _mm_slli_epi64(_u,(int)zeros);
+    _u = vshlq_u64(_u, vdupq_n_s64((int64_t)zeros));
     bitCount -= (int)zeros;
 
     if(bitCount <= 0) {
@@ -258,7 +260,7 @@ void Int::DivStep62(Int* u,Int* v,int64_t* eta,int* pos,int64_t* uu,int64_t* uv,
 
     vh -= uh;
     v0 -= u0;
-    _v = _mm_sub_epi64(_v,_u);
+    _v = vsubq_u64(_v,_u);
 
   }
 
