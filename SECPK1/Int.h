@@ -21,6 +21,8 @@
 #define BIGINTH
 
 #include "Random.h"
+#include "portable.h"
+#include "portable_arith.h"
 #include <string>
 #include <inttypes.h>
 
@@ -214,6 +216,7 @@ private:
 #ifndef WIN64
 
 // Missing intrinsics
+/*
 static uint64_t inline _umul128(uint64_t a, uint64_t b, uint64_t *h) {
   uint64_t rhi;
   uint64_t rlo;
@@ -244,13 +247,13 @@ static uint64_t inline __rdtsc() {
   __asm__( "rdtsc;" :"=d"(h),"=a"(l));
   return (uint64_t)h << 32 | (uint64_t)l;
 }
-
+*/
 #define __shiftright128(a,b,n) ((a)>>(n))|((b)<<(64-(n)))
 #define __shiftleft128(a,b,n) ((b)<<(n))|((a)>>(64-(n)))
 
 
-#define _subborrow_u64(a,b,c,d) __builtin_ia32_sbb_u64(a,b,c,(long long unsigned int*)d);
-#define _addcarry_u64(a,b,c,d) __builtin_ia32_addcarryx_u64(a,b,c,(long long unsigned int*)d);
+//#define _subborrow_u64(a,b,c,d) __builtin_ia32_sbb_u64(a,b,c,(long long unsigned int*)d);
+//#define _addcarry_u64(a,b,c,d) __builtin_ia32_addcarryx_u64(a,b,c,(long long unsigned int*)d);
 #define _byteswap_uint64 __builtin_bswap64
 #define LZC(x) __builtin_clzll(x)
 #define TZC(x) __builtin_ctzll(x)
